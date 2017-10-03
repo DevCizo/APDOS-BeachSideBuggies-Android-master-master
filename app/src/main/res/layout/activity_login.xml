@@ -23,7 +23,7 @@
         <Button
             android:id="@+id/btnLoginFacebook"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:background="@color/colorPrimary"
             android:text="Login With Facebook"
             android:textColor="@android:color/white"

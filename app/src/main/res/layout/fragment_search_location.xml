@@ -52,7 +52,7 @@
             android:paddingBottom="@dimen/_5sdp"
             android:paddingLeft="@dimen/_5sdp"
             android:paddingTop="@dimen/_5sdp"
-            android:text="Popular Location"
+            android:text="Business Sponsor STOP's"
             android:textColor="@color/colorWhite" />
 
         <android.support.v7.widget.RecyclerView

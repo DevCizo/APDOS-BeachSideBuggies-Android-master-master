@@ -176,6 +176,8 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         llBottomReqride = (LinearLayout) findViewById(R.id.llBottomReqride);
 
         rlDriverDetail = (RelativeLayout) findViewById(R.id.rlDriverDetail);
+
+
         lastSavedLatLng = new LatLng(30.328494002870688, -81.4081697165966);
 
         imgDrawerMenu.setOnClickListener(this);
@@ -791,7 +793,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void loadFragmentItem(Fragment fragment) {
+    public void loadFragmentItem(Fragment fragment) {
 
         if (!fragmentClassItems.equals(fragment.getClass().getName())) {
             Log.d("LOADFRAGMENT", "LOADFRAGMENT");
@@ -799,7 +801,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             transaction.add(R.id.frameLayout, fragment);
             fragmentClassItems = fragment.getClass().getName();
             //  Log.d("FragmentClass", fragmentClass);
-            transaction.addToBackStack(fragmentClassItems);
+                transaction.addToBackStack(fragmentClassItems);
             transaction.commit();
         }
     }
@@ -876,6 +878,9 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+
+
+            /*test commit*/
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Permission.askForPermission(MapsActivitys.this, Manifest.permission.ACCESS_COARSE_LOCATION, Constans.PERMISSION_LOCATION);
             Permission.askForPermission(MapsActivitys.this, Manifest.permission.ACCESS_FINE_LOCATION, Constans.PERMISSION_LOCATION);
@@ -1057,7 +1062,8 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         poly.add(new LatLng(30.3329, -81.4020));
         poly.add(new LatLng(30.3327, -81.4112));
 
-        if (mLastLocation != null) {
+        if (mLastLocation != null && mMap!=null) {
+            lastSavedLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             Log.d("mLastLocation", String.valueOf(mLastLocation));
             //startLocationUpdates();
             changeMap(mLastLocation);
