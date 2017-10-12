@@ -514,6 +514,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                 } else {
                     alertDialog("", "Please choose Destination");
                 }*/
+                Log.d("System out","Address  new "+pickupAddress);
                 if (new LatLng(pickupLatitude, pickupLongitude) != null) {
                     if (dropOffPlace != null) {
                         Log.d("LOG", String.valueOf(new LatLng(pickupLatitude, pickupLongitude)));
@@ -588,6 +589,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
             case R.id.tvConfirmRequest:
                 Log.d("tvConfirmRequest", "PERFORM");
+
                 System.out.println("valueeee" + statusCount);
                 rideNotes = edtDriverNote.getText().toString();
                 if (new LatLng(pickupLatitude, pickupLongitude) != null) {
@@ -793,7 +795,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    public void loadFragmentItem(Fragment fragment) {
+    private void loadFragmentItem(Fragment fragment) {
 
         if (!fragmentClassItems.equals(fragment.getClass().getName())) {
             Log.d("LOADFRAGMENT", "LOADFRAGMENT");
@@ -801,7 +803,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             transaction.add(R.id.frameLayout, fragment);
             fragmentClassItems = fragment.getClass().getName();
             //  Log.d("FragmentClass", fragmentClass);
-                transaction.addToBackStack(fragmentClassItems);
+            transaction.addToBackStack(fragmentClassItems);
             transaction.commit();
         }
     }
@@ -878,9 +880,6 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
-
-
-            /*test commit*/
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Permission.askForPermission(MapsActivitys.this, Manifest.permission.ACCESS_COARSE_LOCATION, Constans.PERMISSION_LOCATION);
             Permission.askForPermission(MapsActivitys.this, Manifest.permission.ACCESS_FINE_LOCATION, Constans.PERMISSION_LOCATION);
@@ -1062,7 +1061,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         poly.add(new LatLng(30.3329, -81.4020));
         poly.add(new LatLng(30.3327, -81.4112));
 
-        if (mLastLocation != null && mMap!=null) {
+        if (mLastLocation != null) {
             lastSavedLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             Log.d("mLastLocation", String.valueOf(mLastLocation));
             //startLocationUpdates();
@@ -1205,7 +1204,8 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             try {
                 addresses = geocoder.getFromLocation(lastSavedLatLng.latitude, lastSavedLatLng.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                 if (addresses != null) {
-                    strAddress = addresses.get(0).getAddressLine(0);
+                    Log.d("System out","getting current address "+addresses.toString());
+                    strAddress = addresses.get(0).getAddressLine(0)+", "+addresses.get(0).getLocality()+", "+addresses.get(0).getAdminArea()+", "+addresses.get(0).getCountryName();
                     tvPickup.setText(strAddress + "");
                     pickupAddress = strAddress;
                     pickupLatitude = lastSavedLatLng.latitude;
@@ -1228,19 +1228,23 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                     //  Log.d("pickupLatitudes", String.valueOf(pickupLatitude));
                     //   Log.d("pickuplongitudes", String.valueOf(pickupLongitude));
                     Address address = addresses.get(0);
+                    Log.d("System out","Address of 0 "+addresses.get(0));
                     // Log.d("placeName", address.getAddressLine(0));
                     placeName = String.valueOf(address.getAddressLine(0));
                     //   Log.d("placeName", placeName);
                     // markerOptPickup.title(placeName);
                     tvPickup.setText(placeName);
                     StringBuilder sb = new StringBuilder();
+                    Log.d("System out","Address of  max index "+address.getMaxAddressLineIndex());
                     for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                         if (i != 1) {
                             sb.append(address.getAddressLine(i)).append(",");
                         }
                     }
                     sb.append(address.getCountryName());
-                    pickupAddress = sb.toString();
+                    strAddress = addresses.get(0).getAddressLine(0);
+                    Log.d("System out","Address of  from sb  "+strAddress);
+                    pickupAddress = strAddress;
                     //   Log.d("pickupAddress", pickupAddress);
                     checkMarker(placeName);
                 }
@@ -1306,6 +1310,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         }
         else {
             try {
+                Log.d("System out","Address for request "+pickupAddress);
                 rideId = String.valueOf(System.currentTimeMillis());
                 Log.d("timeS", rideId);
 

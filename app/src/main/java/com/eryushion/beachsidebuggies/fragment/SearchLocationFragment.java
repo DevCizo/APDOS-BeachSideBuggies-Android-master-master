@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,26 +94,13 @@ public class SearchLocationFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(popularLocationAdapter);
-        ImageView img_edit_home=(ImageView)view.findViewById(R.id.img_edit_home);
 
-        img_edit_home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences preferences = getActivity().getSharedPreferences("HOMEADDRESS", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("ISSETHOME", false).commit();
-                getShardData();
-                // activity().loadFragmentItem(new SearchLocationFragment("pickup"));
-            }
-        });
 
         return view;
     }
 
     public void addPopularLocation() {
-        LocationModel model = new LocationModel("Seachasers", "ChIJZ45pGARJ5IgRVq2C9i8FSoQ");
-        locationList.add(model);
-         model = new LocationModel("V Pizza", "ChIJXy-J3QZJ5IgROoWMjCrN12E");
+        LocationModel model = new LocationModel("V Pizza", "ChIJXy-J3QZJ5IgROoWMjCrN12E");
         locationList.add(model);
         model = new LocationModel("Flask & Cannon", "ChIJsTpp3QZJ5IgRPDlZ6An6aiQ");
         locationList.add(model);
@@ -124,7 +110,7 @@ public class SearchLocationFragment extends Fragment {
         locationList.add(model);
         model = new LocationModel("Flying Iguana", "ChIJF9ZhkDpJ5IgRLnBVM3JHfak");
         locationList.add(model);
-        model = new LocationModel("Craft Pizza Co.", "ChIJfw30UDpJ5IgRFB27gJe84DQ");
+        model = new LocationModel("Al's Pizza", "ChIJzVjAgzpJ5IgRx0MapX7YMYs");
         locationList.add(model);
         model = new LocationModel("Sliders Seafood Grille", "ChIJWZWuwDpJ5IgRp6FCx9zZ0yU");
         locationList.add(model);
@@ -175,7 +161,6 @@ public class SearchLocationFragment extends Fragment {
         public void onBindViewHolder(MyViewHolder holder, int position) {
             final LocationModel model = list.get(position);
             holder.tvLocation.setText(model.getPlaceName());
-            holder.img_edit_home.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -186,6 +171,7 @@ public class SearchLocationFragment extends Fragment {
                                     if (places.getStatus().isSuccess() && places.getCount() > 0) {
                                         Place myPlace = places.get(0);
                                         Log.d("Place_found: ", String.valueOf(myPlace.getName()));
+                                        Log.d("Place_found: address", String.valueOf(myPlace.getAddress()));
                                         loadFragment(new LocationDetailFragment(myPlace, from));
                                     } else {
                                         Log.e("Place not found", "NOTFOUND");
@@ -205,11 +191,10 @@ public class SearchLocationFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
             TextView tvLocation;
-            ImageView img_edit_home;
+
             MyViewHolder(View view) {
                 super(view);
                 tvLocation = (TextView) view.findViewById(R.id.tvLocation);
-                img_edit_home = (ImageView) view.findViewById(R.id.img_edit_home);
             }
         }
     }

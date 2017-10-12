@@ -83,7 +83,7 @@ public class SignUpActivity extends AppCompatActivity {
         fcmToken = FirebaseInstanceId.getInstance().getToken();
         System.out.println("FCMMM"+fcmToken);
 
-       // Log.d("fcmToken", fcmToken);
+        Log.d("fcmToken", fcmToken);
         progressDialog = new ProgressDialog(this);
 
         btnCreate.setOnClickListener(new View.OnClickListener() {

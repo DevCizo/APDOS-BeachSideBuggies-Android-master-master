@@ -26,7 +26,7 @@
         <Button
             android:id="@+id/button_fb_login"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/button_click"
             android:text="Sign Up With Facebook"
             android:textColor="@android:color/white"
