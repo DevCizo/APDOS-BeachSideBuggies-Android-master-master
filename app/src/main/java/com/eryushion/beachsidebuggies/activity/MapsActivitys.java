@@ -210,9 +210,10 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             }
         }
 
-
-        user = mfirebaseAuth.getCurrentUser();
-        System.out.println("USERRRR" + user.toString());
+        if (mfirebaseAuth.getCurrentUser() != null) {
+            user = mfirebaseAuth.getCurrentUser();
+            System.out.println("USERRRR" + user.toString());
+        }
 
         if (user != null) {
             firebaseUserId = user.getUid();
@@ -330,6 +331,8 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             });
 
 
+        } else {
+            alertDialog("Oops!","There was an error on our side. Please try logging out and logging back in");
         }
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -405,12 +408,17 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                             if (!driverFcmToken.equals("") && driverFcmToken != null) {
-                                SendNotification.sendNotification(driverFcmToken, "Rides Info", "Ride cancel by Customer");
+                                if (user.getDisplayName() != null) {
+                                    SendNotification.sendNotification(driverFcmToken, "Rides Info", String.format("%s has cancelled their ride", user.getDisplayName()));
+                                } else {
+                                    SendNotification.sendNotification(driverFcmToken, "Rides Info", "A Rider has cancelled their ride");
+                                }
+
                             }
                             cancelled();
                         }
                     });
-        } else if (status == 1) {
+        } else if (status == 1 || status == 3) {
             mDatabase.child("loggedInDrivers")
                     .child(driverName)
                     .child("acceptedRides")
@@ -427,7 +435,11 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
 
                                             if (!driverFcmToken.equals("") && driverFcmToken != null) {
-                                                SendNotification.sendNotification(driverFcmToken, "Rides Info", "Ride cancel by Customer");
+                                                if (user.getDisplayName() != null) {
+                                                    SendNotification.sendNotification(driverFcmToken, "Rides Info", String.format("%s has cancelled their ride", user.getDisplayName()));
+                                                } else {
+                                                    SendNotification.sendNotification(driverFcmToken, "Rides Info", "A Rider has cancelled their ride");
+                                                }
                                             }
                                             cancelled();
                                         }
@@ -514,7 +526,6 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                 } else {
                     alertDialog("", "Please choose Destination");
                 }*/
-                Log.d("System out","Address  new "+pickupAddress);
                 if (new LatLng(pickupLatitude, pickupLongitude) != null) {
                     if (dropOffPlace != null) {
                         Log.d("LOG", String.valueOf(new LatLng(pickupLatitude, pickupLongitude)));
@@ -581,7 +592,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                 }
                 break;
             case R.id.tvPlus:
-                if (numberOfRiders != 11) {
+                if (numberOfRiders != 14) {
                     numberOfRiders = numberOfRiders + 1;
                     tvNumOfPassenger.setText(String.valueOf(numberOfRiders));
                 }
@@ -589,7 +600,6 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
             case R.id.tvConfirmRequest:
                 Log.d("tvConfirmRequest", "PERFORM");
-
                 System.out.println("valueeee" + statusCount);
                 rideNotes = edtDriverNote.getText().toString();
                 if (new LatLng(pickupLatitude, pickupLongitude) != null) {
@@ -795,7 +805,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void loadFragmentItem(Fragment fragment) {
+    public void loadFragmentItem(Fragment fragment) {
 
         if (!fragmentClassItems.equals(fragment.getClass().getName())) {
             Log.d("LOADFRAGMENT", "LOADFRAGMENT");
@@ -803,7 +813,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             transaction.add(R.id.frameLayout, fragment);
             fragmentClassItems = fragment.getClass().getName();
             //  Log.d("FragmentClass", fragmentClass);
-            transaction.addToBackStack(fragmentClassItems);
+                transaction.addToBackStack(fragmentClassItems);
             transaction.commit();
         }
     }
@@ -1043,46 +1053,47 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        markerOptPickup = new MarkerOptions();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mMap != null) {
+            markerOptPickup = new MarkerOptions();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        poly = new ArrayList<>();
-        poly.add(new LatLng(30.3327, -81.4112));
-        poly.add(new LatLng(30.3234, -81.4131));
-        poly.add(new LatLng(30.3074, -81.4198));
-        poly.add(new LatLng(30.2893, -81.4205));
-        poly.add(new LatLng(30.2680, -81.4182));
-        poly.add(new LatLng(30.2676, -81.3836));
-        poly.add(new LatLng(30.3410, -81.3953));
-        poly.add(new LatLng(30.3402, -81.4037));
-        poly.add(new LatLng(30.3329, -81.4020));
-        poly.add(new LatLng(30.3327, -81.4112));
+            poly = new ArrayList<>();
+            poly.add(new LatLng(30.3327, -81.4112));
+            poly.add(new LatLng(30.3234, -81.4131));
+            poly.add(new LatLng(30.3074, -81.4198));
+            poly.add(new LatLng(30.2893, -81.4205));
+            poly.add(new LatLng(30.2680, -81.4182));
+            poly.add(new LatLng(30.2676, -81.3836));
+            poly.add(new LatLng(30.3410, -81.3953));
+            poly.add(new LatLng(30.3402, -81.4037));
+            poly.add(new LatLng(30.3329, -81.4020));
+            poly.add(new LatLng(30.3327, -81.4112));
 
-        if (mLastLocation != null) {
-            lastSavedLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            Log.d("mLastLocation", String.valueOf(mLastLocation));
-            //startLocationUpdates();
-            changeMap(mLastLocation);
-            Polygon polygon = mMap.addPolygon(new PolygonOptions()
-                    .clickable(true)
-                    .addAll(poly));
+            if (mLastLocation != null) {
+                lastSavedLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                Log.d("mLastLocation", String.valueOf(mLastLocation));
+                //startLocationUpdates();
+                changeMap(mLastLocation);
+                Polygon polygon = mMap.addPolygon(new PolygonOptions()
+                        .clickable(true)
+                        .addAll(poly));
 
-            polygon.setStrokeWidth(3.0f);
-            polygon.setStrokeColor(getResources().getColor(R.color.polygon_stroke_color));
-            polygon.setFillColor(getResources().getColor(R.color.polygon_fill_color));
+                polygon.setStrokeWidth(3.0f);
+                polygon.setStrokeColor(getResources().getColor(R.color.polygon_stroke_color));
+                polygon.setFillColor(getResources().getColor(R.color.polygon_fill_color));
 // Store a data object with the polygon, used here to indicate an arbitrary type.
 
 
-            // Position the map's camera near Alice Springs in the center of Australia,
-            // and set the zoom factor so most of Australia shows on the screen.
+                // Position the map's camera near Alice Springs in the center of Australia,
+                // and set the zoom factor so most of Australia shows on the screen.
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 14.0f));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 14.0f));
 
-            // Set listeners for click events.
-            mMap.setOnPolygonClickListener(this);
+                // Set listeners for click events.
+                mMap.setOnPolygonClickListener(this);
 
          /*   double crtLat = mLastLocation.getLatitude();
             double crtLng = mLastLocation.getLongitude();
@@ -1113,8 +1124,9 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
                 }
             });*/
-            //geoCoder(crtLat, crtLng);
+                //geoCoder(crtLat, crtLng);
 
+            }
         }
     }
 
@@ -1204,8 +1216,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
             try {
                 addresses = geocoder.getFromLocation(lastSavedLatLng.latitude, lastSavedLatLng.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                 if (addresses != null) {
-                    Log.d("System out","getting current address "+addresses.toString());
-                    strAddress = addresses.get(0).getAddressLine(0)+", "+addresses.get(0).getLocality()+", "+addresses.get(0).getAdminArea()+", "+addresses.get(0).getCountryName();
+                    strAddress = addresses.get(0).getAddressLine(0);
                     tvPickup.setText(strAddress + "");
                     pickupAddress = strAddress;
                     pickupLatitude = lastSavedLatLng.latitude;
@@ -1228,24 +1239,21 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
                     //  Log.d("pickupLatitudes", String.valueOf(pickupLatitude));
                     //   Log.d("pickuplongitudes", String.valueOf(pickupLongitude));
                     Address address = addresses.get(0);
-                    Log.d("System out","Address of 0 "+addresses.get(0));
                     // Log.d("placeName", address.getAddressLine(0));
                     placeName = String.valueOf(address.getAddressLine(0));
+                    String newName = placeName.substring(0,placeName.indexOf(","));
                     //   Log.d("placeName", placeName);
                     // markerOptPickup.title(placeName);
-                    tvPickup.setText(placeName);
+                    tvPickup.setText(newName);
                     StringBuilder sb = new StringBuilder();
-                    Log.d("System out","Address of  max index "+address.getMaxAddressLineIndex());
                     for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                         if (i != 1) {
                             sb.append(address.getAddressLine(i)).append(",");
                         }
                     }
-                    sb.append(address.getCountryName());
-                    strAddress = addresses.get(0).getAddressLine(0);
-                    Log.d("System out","Address of  from sb  "+strAddress);
-                    pickupAddress = strAddress;
-                    //   Log.d("pickupAddress", pickupAddress);
+                    //sb.append(address.getCountryName());
+                    pickupAddress = sb.toString();
+                    Log.d("pickupAddress", pickupAddress);
                     checkMarker(placeName);
                 }
 
@@ -1310,7 +1318,6 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
         }
         else {
             try {
-                Log.d("System out","Address for request "+pickupAddress);
                 rideId = String.valueOf(System.currentTimeMillis());
                 Log.d("timeS", rideId);
 
@@ -1358,6 +1365,8 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
 
                     }
 
+                } else {
+                    alertDialog("Oops!","There was an error on our side. Please try logging out and logging back in");
                 }
             } catch (Exception ignored) {
 
@@ -1504,7 +1513,7 @@ public class MapsActivitys extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (ActivityCompat.checkSelfPermission(MapsActivitys.this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+        if (permissions.length > 0 && ActivityCompat.checkSelfPermission(MapsActivitys.this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case Constans.PERMISSION_LOCATION:
 
